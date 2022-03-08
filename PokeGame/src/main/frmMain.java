@@ -15,13 +15,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Miguel Matul <https://github.com/MigueMat4>
  */
 public class frmMain extends javax.swing.JFrame {
-    
+    String idActual;
+    String id1;
+    String id2;
+    String id3;
+    String id4;
     Pokemon whoIsThatPokemon; // objeto de la clase que hace match con los datos de la API
     Pokedex dexter = new Pokedex();
     PokeViewer visor = new PokeViewer();
@@ -32,11 +37,25 @@ public class frmMain extends javax.swing.JFrame {
      */
     public frmMain() {
         initComponents();
+        horaActual.d=0;
+        visor.c=0;
         horaActual.start();
+        visor.start();
     }
     
-    public class PokeViewer {
-        public void mostrarSprites() {
+    public class PokeViewer extends Thread{
+        private boolean run = false;
+        int c;
+         public void startRunning(){
+           run = true;
+        }
+        public void stopRunning(){
+            run = false;
+        }
+        @Override
+        public void run(){
+            while(c==0){
+            while(run){
             if (whoIsThatPokemon != null){
                 try {
                     lblSprite.setText("");
@@ -44,6 +63,7 @@ public class frmMain extends javax.swing.JFrame {
                     URL url = new URL(whoIsThatPokemon.getSprites().get("front_default").toString());
                     Image img = ImageIO.read(url);
                     lblSprite.setIcon(new ImageIcon(img));
+                    idActual = whoIsThatPokemon.getId();
                     // 1 segundo para cada cambio de sprite
                     Thread.sleep(1000);
                         
@@ -63,6 +83,13 @@ public class frmMain extends javax.swing.JFrame {
                 btnPokemon2.setText("???");
                 btnPokemon3.setText("???");
                 btnPokemon4.setText("???");
+            }
+            }
+            try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
@@ -91,12 +118,32 @@ public class frmMain extends javax.swing.JFrame {
         lblSprite.setText("?");
 
         btnPokemon1.setText("???");
+        btnPokemon1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPokemon1ActionPerformed(evt);
+            }
+        });
 
         btnPokemon2.setText("???");
+        btnPokemon2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPokemon2ActionPerformed(evt);
+            }
+        });
 
         btnPokemon3.setText("???");
+        btnPokemon3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPokemon3ActionPerformed(evt);
+            }
+        });
 
         btnPokemon4.setText("???");
+        btnPokemon4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPokemon4ActionPerformed(evt);
+            }
+        });
 
         btnJugar.setText("Jugar");
         btnJugar.addActionListener(new java.awt.event.ActionListener() {
@@ -167,18 +214,60 @@ public class frmMain extends javax.swing.JFrame {
 
     private void btnJugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJugarActionPerformed
         try {
+            visor.startRunning();
             whoIsThatPokemon = dexter.buscarPokemon();
             btnPokemon1.setText(whoIsThatPokemon.getName());
+            id1= whoIsThatPokemon.getId();
+            whoIsThatPokemon = dexter.buscarPokemon();
             btnPokemon2.setText(whoIsThatPokemon.getName());
+            id2= whoIsThatPokemon.getId();
+            whoIsThatPokemon = dexter.buscarPokemon();
             btnPokemon3.setText(whoIsThatPokemon.getName());
+            id3= whoIsThatPokemon.getId();
+            whoIsThatPokemon = dexter.buscarPokemon();
             btnPokemon4.setText(whoIsThatPokemon.getName());
-            visor.mostrarSprites();
+            id4= whoIsThatPokemon.getId();
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
         }
         btnJugar.setText("Jugar de nuevo");
     }//GEN-LAST:event_btnJugarActionPerformed
 
+    private void btnPokemon1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPokemon1ActionPerformed
+        // TODO add your handling code here:
+        if(id1==idActual){
+            Ganaste();
+            visor.stopRunning();
+        }
+    }//GEN-LAST:event_btnPokemon1ActionPerformed
+
+    private void btnPokemon2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPokemon2ActionPerformed
+        // TODO add your handling code here:
+         if(id2==idActual){
+            Ganaste();
+            visor.stopRunning();
+        }
+    }//GEN-LAST:event_btnPokemon2ActionPerformed
+
+    private void btnPokemon3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPokemon3ActionPerformed
+        // TODO add your handling code here:
+         if(id3==idActual){
+            Ganaste();
+            visor.stopRunning();
+        }
+    }//GEN-LAST:event_btnPokemon3ActionPerformed
+
+    private void btnPokemon4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPokemon4ActionPerformed
+        // TODO add your handling code here:
+         if(id4==idActual){
+            Ganaste();
+            visor.stopRunning();
+        }
+    }//GEN-LAST:event_btnPokemon4ActionPerformed
+ public void Ganaste(){
+        String ms1= "<html><p style = \" font: 15px; \">Felicidades \n Has ganado";
+        JOptionPane.showMessageDialog(null, ms1, " ",JOptionPane.PLAIN_MESSAGE);
+    }
     /**
      * @param args the command line arguments
      */
@@ -217,7 +306,7 @@ public class frmMain extends javax.swing.JFrame {
     // clase para la hora del sistema. ¡No modificar!
     public class Reloj extends Thread {
         Calendar calendario;
-        
+        int d;
         @Override
         public void run() {
             while (true) {
